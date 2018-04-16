@@ -1,0 +1,41 @@
+{
+  "messageVersion": "1.0",
+  "invocationSource": "FulfillmentCodeHook",
+  "userId": "ad4a9f70-8ae5-4f8c-be7b-e07418884703:T9D0P6ZFU:U9E27TSQ7",
+  "sessionAttributes": {},
+  "bot": {
+    "name": "CityWeather",
+    "alias": "CityWeather",
+    "version": "5"
+  },
+  "outputDialogMode": "Text",
+  "currentIntent": {
+    "name": "CreateMeeting",
+    "slots": {
+      "MeetingDate": "2018-04-02",
+      "MeetingTime": "11:00",
+      "MeetingDuration": "PT50M",
+      "MeetingTitle": "test timezone attendees"
+    },
+    "slotDetails": {
+      "MeetingDate": {
+        "resolutions": [],
+        "originalValue": "tomorrow"
+      },
+      "MeetingTime": {
+        "resolutions": [],
+        "originalValue": "11AM"
+      },
+      "MeetingDuration": {
+        "resolutions": [],
+        "originalValue": "50 minutes"
+      },
+      "MeetingTitle": {
+        "resolutions": [],
+        "originalValue": "test timezone"
+      }
+    },
+    "confirmationStatus": "None"
+  },
+  "inputTranscript": "tell me weather from London"
+}

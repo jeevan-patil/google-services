@@ -1,0 +1,30 @@
+{
+  "messageVersion": "1.0",
+  "invocationSource": "FulfillmentCodeHook",
+  "userId": "ad4a9f70-8ae5-4f8c-be7b-e07418884703:T9D0P6ZFU:U9E27TSQ7",
+  "sessionAttributes": {},
+  "bot": {
+    "name": "CityWeather",
+    "alias": "CityWeather",
+    "version": "5"
+  },
+  "outputDialogMode": "Text",
+  "currentIntent": {
+    "name": "FindEventParticipants",
+    "slots": {
+      "participants": "Sanjay,sandeep,ashutosh,jeevan.patil@synerzip.com"
+    },
+    "slotDetails": {
+      "DateFrom": {
+        "resolutions": [],
+        "originalValue": "Sanjay,sandeep,ashutosh,jeevan.patil@synerzip.com"
+      },
+      "DateTo": {
+        "resolutions": [],
+        "originalValue": "Sanjay,sandeep,ashutosh,jeevan.patil@synerzip.com"
+      }
+    },
+    "confirmationStatus": "None"
+  },
+  "inputTranscript": "schedule a meeting with Sanjay,sandeep,ashutosh,jeevan.patil@synerzip.com"
+}

@@ -1,0 +1,26 @@
+{
+  "messageVersion": "1.0",
+  "invocationSource": "FulfillmentCodeHook",
+  "userId": "ad4a9f70-8ae5-4f8c-be7b-e07418884703:T9D0P6ZFU:U9E27TSQ7",
+  "sessionAttributes": {},
+  "bot": {
+    "name": "CityWeather",
+    "alias": "CityWeather",
+    "version": "5"
+  },
+  "outputDialogMode": "Text",
+  "currentIntent": {
+    "name": "WeatherFromCity",
+    "slots": {
+      "AccountToken": "4/AABpGdY4puis8S5SOwpkbCsA9gpR6FK1RY84vbxyQToHRHGEcHJ-94g"
+    },
+    "slotDetails": {
+      "AccountToken": {
+        "resolutions": [],
+        "originalValue": "4/AACntaPLx9cOwfEyeQY3ruCTcc_RYLe3wyPu7b1X8q1UHHYDoT5GeR8"
+      }
+    },
+    "confirmationStatus": "None"
+  },
+  "inputTranscript": "authtoken 4/AACntaPLx9cOwfEyeQY3ruCTcc_RYLe3wyPu7b1X8q1UHHYDoT5GeR8"
+}

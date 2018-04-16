@@ -1,0 +1,26 @@
+{
+  "messageVersion": "1.0",
+  "invocationSource": "FulfillmentCodeHook",
+  "userId": "ad4a9f70-8ae5-4f8c-be7b-e07418884703:T9D0P6ZFU:U9E27TSQ7",
+  "sessionAttributes": {},
+  "bot": {
+    "name": "CityWeather",
+    "alias": "CityWeather",
+    "version": "5"
+  },
+  "outputDialogMode": "Text",
+  "currentIntent": {
+    "name": "ShowFreeSlots",
+    "slots": {
+      "DateFrom": "2018-03-08"
+    },
+    "slotDetails": {
+      "DateFrom": {
+        "resolutions": [],
+        "originalValue": "2018-03-08"
+      }
+    },
+    "confirmationStatus": "None"
+  },
+  "inputTranscript": "free slots"
+}

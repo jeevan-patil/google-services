@@ -1,0 +1,32 @@
+service: google-services
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: prod
+  environment:
+    DYNAMO_ACCESS_KEY: ${file(./conf/config.${self:provider.stage}.json):DYNAMO_ACCESS_KEY}
+    DYNAMO_SECRET_KEY: ${file(./conf/config.${self:provider.stage}.json):DYNAMO_SECRET_KEY}
+
+functions:
+  listCalendarEvents:
+    description: API to fetch calendar events.
+    handler: handler.listCalendarEvents
+  validateAuthCode:
+    description: API to validate the google auth code and create tokens.
+    handler: handler.validateAuthCode
+  createEvent:
+    description: API to create a calendar event.
+    handler: handler.createEvent
+  showFreeSlots:
+    description: API to show free slots from the day.
+    handler: handler.showFreeSlots
+  findEventParticipants:
+    description: API to find participant email ids based on the names.
+    handler: handler.findEventParticipants
+  greetUser:
+    description: Handler to greet user
+    handler: handler.greetUser
+  thankUser:
+    description: Handler to thank the user
+    handler: handler.thankUser
