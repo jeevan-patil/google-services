@@ -30,3 +30,6 @@ functions:
   thankUser:
     description: Handler to thank the user
     handler: handler.thankUser
+  searchFreeRooms:
+    description: Handler to find free rooms
+    handler: handler.searchFreeRooms

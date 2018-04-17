@@ -64,7 +64,7 @@ var GoogleService = {
       if (!oauthToken || oauthToken === 'NOAUTH') {
         askUserToAuthenticate(callback);
       } else {
-        showFreeSlots(oauthToken, day, time, duration, function (result) {
+        showFreeSlots(null, oauthToken, day, time, duration, function (result) {
           callback(result);
         });
       }
@@ -132,7 +132,7 @@ function askUserToAuthenticate(callback) {
   });
 }
 
-var showFreeSlots = function (auth, day, time, duration, callback) {
+var showFreeSlots = function (resource, auth, day, time, duration, callback) {
   var calendar = google.calendar('v3');
   var start = dateUtil.addTimeToDate(day, time);
   var startDate = start.format();
@@ -143,17 +143,20 @@ var showFreeSlots = function (auth, day, time, duration, callback) {
 
   console.log('FreeBusy: start - ' + startDate + ', end - ' + endDate);
 
+  if (!resource) {
+    resource = 'primary';
+  }
+
   var criteria = {
     auth: auth,
     resource: {
-      items: [{"id": 'primary'}],
-      timeMin: startDate,
-      timeMax: endDate
+      items: [{"id": resource}],
+      timeMin: dateUtil.convertToRFC3339(startDate),
+      timeMax: dateUtil.convertToRFC3339(endDate)
     }
   };
 
   calendar.freebusy.query(criteria, function (error, response) {
-    console.log(response.data);
     callback(response.data);
   });
 };
@@ -399,27 +402,33 @@ var fetchAllTheRooms = function (oauthToken, callback) {
 };
 
 var searchMeetingRooms = function (name, day, time, oauthToken, callback) {
+  const defaultDuration = 60;
+
   if (!day) {
     day = dateUtil.now();
   }
 
   var startDate = dateUtil.addTimeToDate(day, time);
   var toDate = startDate.clone();
-  toDate = dateUtil.addMinutesToDate(toDate, 60);
+  toDate = dateUtil.addMinutesToDate(toDate, defaultDuration);
   var availableRooms = [];
 
   //console.log(startDate.format());
   //console.log(toDate.format());
+
+  console.log('searching free rooms at ' + startDate.format());
 
   fetchAllTheRooms(oauthToken, function (rooms) {
     if (rooms && rooms.length > 0) {
       rooms.forEach(function (room) {
         if (name && room.name.toLowerCase().indexOf(name.toLowerCase()) > -1) {
           if (!isRoomBusy(room.mid, startDate, toDate, oauthToken)) {
+            room.name = room.name.split('(')[0].trim();
             availableRooms.push(room);
           }
         } else if (!name) {
           if (!isRoomBusy(room.mid, startDate, toDate, oauthToken)) {
+            room.name = room.name.split('(')[0].trim();
             availableRooms.push(room);
           }
         }
@@ -429,15 +438,30 @@ var searchMeetingRooms = function (name, day, time, oauthToken, callback) {
   });
 };
 
+var isBusy = function (resource, auth, day, time, duration) {
+
+  /*if (!isBusy(room.mid, oauthToken, day, time, defaultDuration)) {
+    room.name = room.name.split('(')[0].trim();
+    availableRooms.push(room);
+  }*/
+
+  showFreeSlots(resource, auth, day, time, duration, function (events) {
+    if (!events || events.length <= 0) {
+      return false;
+    } else {
+      return true;
+    }
+  });
+};
+
 var isRoomBusy = function (roomResourceEmail, from, to, oauthToken) {
-  listCalendarEvents(roomResourceEmail, from, to,
-      oauthToken, function (events) {
-        if (!events || events.length <= 0) {
-          return false;
-        } else {
-          return true;
-        }
-      });
+  listCalendarEvents(roomResourceEmail, from, to, oauthToken, function (events) {
+    if (!events || events.length <= 0) {
+      return false;
+    } else {
+      return true;
+    }
+  });
 };
 
 module.exports = GoogleService;

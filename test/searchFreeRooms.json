@@ -1,0 +1,31 @@
+{
+  "messageVersion": "1.0",
+  "invocationSource": "FulfillmentCodeHook",
+  "userId": "238cabdb-f849-4e69-ac98-b42db03d01ab:T9D0P6ZFU:U9E27TSQ7",
+  "sessionAttributes": null,
+  "bot": {
+    "name": "MeetingAssistant",
+    "alias": "MeetAssist",
+    "version": "20"
+  },
+  "outputDialogMode": "Text",
+  "currentIntent": {
+    "name": "SearchFreeRooms",
+    "slots": {
+      "OnDate": "2018-04-17",
+      "OnTime": "17:00"
+    },
+    "slotDetails": {
+      "OnDate": {
+        "resolutions": [],
+        "originalValue": "today"
+      },
+      "OnTime": {
+        "resolutions": [],
+        "originalValue": "5PM"
+      }
+    },
+    "confirmationStatus": "None"
+  },
+  "inputTranscript": "free rooms today at 5PM"
+}
