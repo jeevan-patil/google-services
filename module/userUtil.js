@@ -7,7 +7,7 @@ var UserUtil = {
         const tokenized = userId.split(':');
 
         if (tokenized) {
-          callback((tokenized.length === 3) ? (tokenized[1] + '-' + tokenized[2]) : (tokenized[tokenized.length]));
+          callback((tokenized.length === 3) ? (tokenized[1] + '-' + tokenized[2]) : (tokenized[tokenized.length - 1]));
         }
       } else {
         callback(userId);

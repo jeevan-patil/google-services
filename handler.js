@@ -218,6 +218,7 @@ module.exports.findEventParticipants = (event, context, callback) => {
 };
 
 module.exports.greetUser = (event, context, callback) => {
+  console.log('event object: ' + JSON.stringify(event));
   const outputSessionAttributes = event.sessionAttributes || {};
 
   userUtil.getBotUserId(event, function (userId) {
@@ -250,7 +251,7 @@ module.exports.thankUser = (event, context, callback) => {
         if (authorized) {
           var message = 'Thanks! It is my pleasure.';
           //callback(null, close(outputSessionAttributes, 'Fulfilled', buildMessage(message)));
-          googleService.searchMeetingRooms('2018-04-16', '19:00', userId, function (message) {
+          googleService.searchMeetingRooms('', '2018-04-16', '19:00', userId, function (message) {
             callback(null, close(outputSessionAttributes, 'Fulfilled', buildMessage(message)));
           });
         } else {

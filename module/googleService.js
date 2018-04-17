@@ -111,12 +111,12 @@ var GoogleService = {
     });
   },
 
-  searchMeetingRooms: function (day, time, userId, callback) {
+  searchMeetingRooms: function (name, day, time, userId, callback) {
     googleClient.getUserOAuthClient(userId, function (oauthToken) {
       if (!oauthToken || oauthToken === 'NOAUTH') {
         askUserToAuthenticate(callback);
       } else {
-        searchMeetingRooms(day, time, oauthToken, function (rooms) {
+        searchMeetingRooms(name, day, time, oauthToken, function (rooms) {
           callback(rooms);
         });
       }
@@ -219,8 +219,9 @@ var searchContacts = function (searchQuery, contacts) {
 var listCalendarEvents = function (calendarId, from, to, auth, callback) {
   var calendar = google.calendar('v3');
 
-  console.log(from);
-  console.log(to);
+  //console.log(from);
+  //console.log(to);
+
   var criteria = {
     auth: auth,
     calendarId: calendarId,
@@ -231,7 +232,7 @@ var listCalendarEvents = function (calendarId, from, to, auth, callback) {
     //timeZone: 'Asia/Kolkata'
   };
 
-  console.log(criteria);
+  //console.log(criteria);
 
   calendar.events.list(criteria, function (err, response) {
     if (err) {
@@ -397,7 +398,7 @@ var fetchAllTheRooms = function (oauthToken, callback) {
   });
 };
 
-var searchMeetingRooms = function (day, time, oauthToken, callback) {
+var searchMeetingRooms = function (name, day, time, oauthToken, callback) {
   if (!day) {
     day = dateUtil.now();
   }
@@ -407,24 +408,24 @@ var searchMeetingRooms = function (day, time, oauthToken, callback) {
   toDate = dateUtil.addMinutesToDate(toDate, 60);
   var availableRooms = [];
 
-  console.log(startDate.format());
-  console.log(toDate.format());
+  //console.log(startDate.format());
+  //console.log(toDate.format());
 
   fetchAllTheRooms(oauthToken, function (rooms) {
     if (rooms && rooms.length > 0) {
       rooms.forEach(function (room) {
-        if (!isRoomBusy(room.mid, startDate, toDate, oauthToken)) {
-          console.log(room.name + ' is free.');
-          availableRooms.push(room);
-        } else {
-          console.log(room.name + ' is busy.');
+        if (name && room.name.toLowerCase().indexOf(name.toLowerCase()) > -1) {
+          if (!isRoomBusy(room.mid, startDate, toDate, oauthToken)) {
+            availableRooms.push(room);
+          }
+        } else if (!name) {
+          if (!isRoomBusy(room.mid, startDate, toDate, oauthToken)) {
+            availableRooms.push(room);
+          }
         }
       });
-      console.log(availableRooms.length);
-      callback(availableRooms);
-    } else {
-      callback(availableRooms);
     }
+    callback(availableRooms);
   });
 };
 
