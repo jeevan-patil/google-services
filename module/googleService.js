@@ -250,6 +250,7 @@ var listCalendarEvents = function (calendarId, from, to, auth, callback) {
       var eventData = [];
 
       events.forEach(function (event) {
+        console.log(event);
         var attendees = [];
         if (event.attendees) {
           event.attendees.forEach(function (attendee) {
@@ -284,6 +285,7 @@ var createEvent = function (eventDetails, auth, callback) {
   const day = eventDetails.currentIntent.slots.MeetingDate;
   const time = eventDetails.currentIntent.slots.MeetingTime;
   const title = eventDetails.currentIntent.slots.MeetingTitle;
+  const room = eventDetails.currentIntent.slots.MeetingRoom;
 
   // duration is in minutes
   var duration = eventDetails.currentIntent.slots.MeetingDuration;
@@ -294,7 +296,7 @@ var createEvent = function (eventDetails, auth, callback) {
   }
 
   console.log('Meeting request: title - ' + title + ', day - ' + day + ', time - ' + time + ', for ' + duration
-      + ' minutes.');
+      + ' minutes in room - ' + room);
 
   var start = dateUtil.addTimeToDate(day, time);
   var startDate = start.format();
@@ -302,44 +304,60 @@ var createEvent = function (eventDetails, auth, callback) {
   var end = new Date(start);
   end.setMinutes(end.getMinutes() + duration);
   var endDate = dateUtil.convertDate(end);
-
   var timezone = 'Asia/Kolkata';
-  var location = 'Eden Gardens';
 
   var attendees = [];
-  //attendees.push({'email':'sanjay.yadav@synerzip.com'});
+  if (room) {
+    console.log('search by ' + room);
+    searchRoom(room, day, time, duration, auth, function (rooms) {
+      console.log(rooms);
+      if (rooms && rooms.length > 0) {
+        rooms.forEach(function (room) {
+          var resource = {
+            email: room.mid,
+            displayName: room.name,
+            resource: true,
+            responseStatus: 'accepted'
+          };
+          attendees.push(resource);
+        });
+      }
+    });
+  }
 
-  var calendarEvent = new Object();
-  calendarEvent.summary = title;
-  //calendarEvent.location = location;
-  calendarEvent.start = {
-    'dateTime': startDate,
-    'timeZone': timezone
-  };
-  calendarEvent.end = {
-    'dateTime': endDate,
-    'timeZone': timezone
-  };
-  calendarEvent.attendees = attendees;
-  calendarEvent.sendNotifications = true;
-  calendarEvent.guestsCanSeeOtherGuests = true;
+  setTimeout(function () {
+    var calendarEvent = new Object();
+    calendarEvent.summary = title;
+    //calendarEvent.location = location;
+    calendarEvent.start = {
+      'dateTime': startDate,
+      'timeZone': timezone
+    };
+    calendarEvent.end = {
+      'dateTime': endDate,
+      'timeZone': timezone
+    };
+    calendarEvent.attendees = attendees;
+    calendarEvent.sendNotifications = true;
+    calendarEvent.guestsCanSeeOtherGuests = true;
 
-  console.log('Calendar event input are : ' + JSON.stringify(calendarEvent));
+    console.log('Calendar event input are : ' + JSON.stringify(calendarEvent));
 
-  var calendar = google.calendar('v3');
+    var calendar = google.calendar('v3');
 
-  calendar.events.insert({
-    auth: auth,
-    calendarId: 'primary',
-    resource: calendarEvent,
-  }, function (err, event) {
-    if (err) {
-      console.log('Could not create event - ' + err);
-      callback('Sorry! Could not create the meeting - ' + err);
-    } else {
-      callback(event.data);
-    }
-  });
+    calendar.events.insert({
+      auth: auth,
+      calendarId: 'primary',
+      resource: calendarEvent,
+    }, function (err, event) {
+      if (err) {
+        console.log('Could not create event - ' + err);
+        callback('Sorry! Could not create the meeting - ' + err);
+      } else {
+        callback(event.data);
+      }
+    });
+  }, 3000);
 };
 
 var prepareCalendarMarkup = function (events) {
@@ -413,9 +431,6 @@ var searchMeetingRooms = function (name, day, time, oauthToken, callback) {
   toDate = dateUtil.addMinutesToDate(toDate, defaultDuration);
   var availableRooms = [];
 
-  //console.log(startDate.format());
-  //console.log(toDate.format());
-
   console.log('searching free rooms at ' + startDate.format());
 
   fetchAllTheRooms(oauthToken, function (rooms) {
@@ -429,6 +444,38 @@ var searchMeetingRooms = function (name, day, time, oauthToken, callback) {
         } else if (!name) {
           if (!isRoomBusy(room.mid, startDate, toDate, oauthToken)) {
             room.name = room.name.split('(')[0].trim();
+            availableRooms.push(room);
+          }
+        }
+      });
+    }
+    callback(availableRooms);
+  });
+};
+
+var searchRoom = function (name, day, time, duration, oauthToken, callback) {
+  if (!day) {
+    day = dateUtil.now();
+  }
+
+  if (!duration) {
+    duration = 60;
+  }
+
+  var startDate = dateUtil.addTimeToDate(day, time);
+  var toDate = startDate.clone();
+  toDate = dateUtil.addMinutesToDate(toDate, duration);
+  var availableRooms = [];
+
+  fetchAllTheRooms(oauthToken, function (rooms) {
+    if (rooms && rooms.length > 0) {
+      rooms.forEach(function (room) {
+        if (name && room.name.toLowerCase().indexOf(name.toLowerCase()) > -1) {
+          if (!isRoomBusy(room.mid, startDate, toDate, oauthToken)) {
+            availableRooms.push(room);
+          }
+        } else if (!name) {
+          if (!isRoomBusy(room.mid, startDate, toDate, oauthToken)) {
             availableRooms.push(room);
           }
         }

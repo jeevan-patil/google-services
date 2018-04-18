@@ -1,41 +1,46 @@
 {
   "messageVersion": "1.0",
   "invocationSource": "FulfillmentCodeHook",
-  "userId": "ad4a9f70-8ae5-4f8c-be7b-e07418884703:T9D0P6ZFU:U9E27TSQ7",
-  "sessionAttributes": {},
+  "userId": "238cabdb-f849-4e69-ac98-b42db03d01ab:T9D0P6ZFU:U9E27TSQ7",
+  "sessionAttributes": null,
   "bot": {
-    "name": "CityWeather",
-    "alias": "CityWeather",
-    "version": "5"
+    "name": "MeetingAssistant",
+    "alias": "MeetAssist",
+    "version": "23"
   },
   "outputDialogMode": "Text",
   "currentIntent": {
     "name": "CreateMeeting",
     "slots": {
-      "MeetingDate": "2018-04-02",
-      "MeetingTime": "11:00",
-      "MeetingDuration": "PT50M",
-      "MeetingTitle": "test timezone attendees"
+      "MeetingDate": "2018-04-18",
+      "MeetingRoom": "eden",
+      "MeetingTime": "06:00",
+      "MeetingDuration": "PT10M",
+      "MeetingTitle": "test tesjfg"
     },
     "slotDetails": {
       "MeetingDate": {
         "resolutions": [],
         "originalValue": "tomorrow"
       },
+      "MeetingRoom": {
+        "resolutions": [],
+        "originalValue": "eden"
+      },
       "MeetingTime": {
         "resolutions": [],
-        "originalValue": "11AM"
+        "originalValue": "6AM"
       },
       "MeetingDuration": {
         "resolutions": [],
-        "originalValue": "50 minutes"
+        "originalValue": "10 minutes"
       },
       "MeetingTitle": {
         "resolutions": [],
-        "originalValue": "test timezone"
+        "originalValue": "test tesjfg"
       }
     },
     "confirmationStatus": "None"
   },
-  "inputTranscript": "tell me weather from London"
+  "inputTranscript": "eden"
 }
