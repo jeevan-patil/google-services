@@ -33,3 +33,21 @@ functions:
   searchFreeRooms:
     description: Handler to find free rooms
     handler: handler.searchFreeRooms
+  authenticateUser:
+    description: API to acquire token of user.
+    handler: handler.authenticateUser
+    events:
+      - http:
+          path: authenticate
+          method: GET
+          cors: true
+          integration: lambda
+          request:
+            passThrough: NEVER
+          response:
+            headers:
+              Content-Type: "'application/json'"
+            template: $input.path('$')
+            statusCodes:
+              200:
+                pattern: '' # Default response method

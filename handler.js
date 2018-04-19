@@ -298,6 +298,42 @@ module.exports.searchFreeRooms = (event, context, callback) => {
   });
 };
 
+module.exports.authenticateUser = (event, context, callback) => {
+  console.log('authenticateUser event ' + JSON.stringify(event));
+
+  var response = {
+    statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true
+    }
+  };
+
+  const uid = event.query.uid;
+  event.userId = uid;
+
+  userUtil.getBotUserId(event, function (userId) {
+    if (!userId) {
+      response.statusCode = 400;
+      response.body = 'Could not recognize the user identity.';
+      callback(null, response);
+    } else {
+      const code = event.query.code;
+
+      if (!code || !uid) {
+        response.statusCode = 400;
+        response.body = 'NOCREDS';
+        callback(null, response);
+      } else {
+        googleService.validateAuthCode(userId, code, function (result) {
+          response.body = result;
+          callback(null, response);
+        });
+      }
+    }
+  });
+};
+
 function unauthorizedUser(callback) {
   callback(null,
       close({}, 'Fulfilled', buildMessage('Could not recognize the user identity.')));
