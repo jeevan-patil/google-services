@@ -324,7 +324,7 @@ module.exports.authenticateUser = (event, context, callback) => {
       } else {
         googleService.saveTokens(userId, token, function (result) {
           response.body = result;
-          callback(null, response);
+          callback(null, buildLambdaResponseCard(200, response));
         });
       }
     });
@@ -340,6 +340,6 @@ function buildLambdaResponseCard(statusCode, response) {
   return {
     "statusCode": statusCode,
     "headers": {"Content-Type": "application/json"},
-    "body": JSON.stringify(response)
+    "body": JSON.stringify({'message': response})
   };
 }
