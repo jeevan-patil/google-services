@@ -39,6 +39,11 @@ var GoogleClient = {
         }
       });
     });
+  },
+
+  storeToken: function (userId, token, callback) {
+    storeToken(userId, token);
+    callback('Thank you. Account has been verified successfully.');
   }
 };
 

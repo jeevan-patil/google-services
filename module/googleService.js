@@ -121,6 +121,12 @@ var GoogleService = {
         });
       }
     });
+  },
+
+  saveTokens: function (userId, token, callback) {
+    googleClient.storeToken(userId, token, function (result) {
+      callback(result);
+    });
   }
 };
 

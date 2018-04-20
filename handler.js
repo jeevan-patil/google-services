@@ -304,37 +304,42 @@ module.exports.authenticateUser = (event, context, callback) => {
   var response = {
     statusCode: 200,
     headers: {
+      "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Credentials": true
     }
   };
 
-  const uid = event.query.uid;
+  const body = JSON.parse(event.body);
+  const token = body.token;
+  const uid = body.uid;
   event.userId = uid;
 
-  userUtil.getBotUserId(event, function (userId) {
-    if (!userId) {
-      response.statusCode = 400;
-      response.body = 'Could not recognize the user identity.';
-      callback(null, response);
-    } else {
-      const code = event.query.code;
-
-      if (!code || !uid) {
-        response.statusCode = 400;
-        response.body = 'NOCREDS';
-        callback(null, response);
+  if (!token || !uid) {
+    callback(null, buildLambdaResponseCard(400, 'Token and UserId are mandatory.'));
+  } else {
+    userUtil.getBotUserId(event, function (userId) {
+      if (!userId) {
+        callback(null, buildLambdaResponseCard(400, 'Could not recognize the user identity.'));
       } else {
-        googleService.validateAuthCode(userId, code, function (result) {
+        googleService.saveTokens(userId, token, function (result) {
           response.body = result;
           callback(null, response);
         });
       }
-    }
-  });
+    });
+  }
 };
 
 function unauthorizedUser(callback) {
   callback(null,
       close({}, 'Fulfilled', buildMessage('Could not recognize the user identity.')));
+}
+
+function buildLambdaResponseCard(statusCode, response) {
+  return {
+    "statusCode": statusCode,
+    "headers": {"Content-Type": "application/json"},
+    "body": JSON.stringify(response)
+  };
 }
