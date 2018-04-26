@@ -1,6 +1,7 @@
 var moment = require('moment');
 const IST_TZ = "Asia/Kolkata";
 const DATE_FORMAT = 'YYYY-MM-DD[T]HH:mm:ss';
+const IST_TZ_TIME = "05:30";
 
 var DateUtil = {
   defaultTimezone: function () {
@@ -9,7 +10,12 @@ var DateUtil = {
 
   convertToRFC3339: function (date) {
     if (date) {
-      return moment(date).format(DATE_FORMAT);
+      var formatted = moment(date).format();
+      var tz = formatted.split("+");
+      if (tz.length > 1) {
+        formatted = tz[0] + "+" + IST_TZ_TIME;
+      }
+      return formatted;
     }
     return null;
   },
@@ -71,10 +77,7 @@ var DateUtil = {
     var start = moment(strDate);
     var end = start.clone();
     end = this.addMinutesToDate(end, minutes);
-    console.log('debug');
-    console.log(end);
     end = end.format(DATE_FORMAT);
-    console.log(end);
     return "" + end;
   }
 };

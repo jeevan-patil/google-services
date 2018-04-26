@@ -185,17 +185,20 @@ module.exports.createEvent = (event, context, callback) => {
 };
 
 module.exports.showFreeSlots = (event, context, callback) => {
+  console.log('showFreeSlots event - ' + JSON.stringify(event));
   const outputSessionAttributes = event.sessionAttributes || {};
 
   userUtil.getBotUserId(event, function (userId) {
     if (!userId) {
       unauthorizedUser(callback);
     } else {
-      const from = event.currentIntent.slots.DateFrom;
+      const day = event.currentIntent.slots.OnDate;
+      const time = event.currentIntent.slots.OnTime;
+      const duration = 60;
 
-      //googleService.showFreeSlots(userId, from, function (result) {
-      callback(null, close(outputSessionAttributes, 'Fulfilled', buildMessage('Not implemented yet.')));
-      //});
+      googleService.showFreeSlots(userId, day, time, duration, function (result) {
+        callback(null, close(outputSessionAttributes, 'Fulfilled', JSON.stringify(result)));
+      });
     }
   });
 };

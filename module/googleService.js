@@ -140,13 +140,14 @@ function askUserToAuthenticate(callback) {
 
 var showFreeSlots = function (resource, auth, day, time, duration, callback) {
   var calendar = google.calendar('v3');
-  var start = dateUtil.addTimeToDate(day, time);
-  var startDate = start.format();
 
-  var end = new Date(start);
-  end.setMinutes(end.getMinutes() + duration);
-  var endDate = dateUtil.convertDate(end);
+  if (!day) {
+    day = dateUtil.now();
+  }
 
+  var timezone = dateUtil.defaultTimezone();
+  var startDate = dateUtil.prepareDate(day, time);
+  var endDate = dateUtil.addMinutesAndReturnStringDate(startDate, duration);
   console.log('FreeBusy: start - ' + startDate + ', end - ' + endDate);
 
   if (!resource) {
@@ -158,9 +159,12 @@ var showFreeSlots = function (resource, auth, day, time, duration, callback) {
     resource: {
       items: [{"id": resource}],
       timeMin: dateUtil.convertToRFC3339(startDate),
-      timeMax: dateUtil.convertToRFC3339(endDate)
+      timeMax: dateUtil.convertToRFC3339(endDate),
+      timeZone: timezone
     }
   };
+
+  console.log('showFreeSlots - ' + JSON.stringify(criteria));
 
   calendar.freebusy.query(criteria, function (error, response) {
     callback(response.data);
@@ -228,9 +232,6 @@ var searchContacts = function (searchQuery, contacts) {
 var listCalendarEvents = function (calendarId, from, to, auth, callback) {
   var calendar = google.calendar('v3');
 
-  //console.log(from);
-  //console.log(to);
-
   var criteria = {
     auth: auth,
     calendarId: calendarId,
@@ -241,14 +242,13 @@ var listCalendarEvents = function (calendarId, from, to, auth, callback) {
     timeZone: dateUtil.defaultTimezone()
   };
 
-  //console.log(criteria);
-
   calendar.events.list(criteria, function (err, response) {
     if (err) {
       callback('Could not list the calendar events.');
     }
 
     var events = response.data.items;
+
     if (events.length == 0) {
       callback(events);
     } else {
@@ -256,7 +256,6 @@ var listCalendarEvents = function (calendarId, from, to, auth, callback) {
       var eventData = [];
 
       events.forEach(function (event) {
-        console.log(event);
         var attendees = [];
         if (event.attendees) {
           event.attendees.forEach(function (attendee) {
@@ -438,19 +437,26 @@ var searchMeetingRooms = function (name, day, time, oauthToken, callback) {
     if (rooms && rooms.length > 0) {
       rooms.forEach(function (room) {
         if (name && room.name.toLowerCase().indexOf(name.toLowerCase()) > -1) {
-          if (!isRoomBusy(room.mid, startDate, toDate, oauthToken)) {
-            room.name = room.name.split('(')[0].trim();
-            availableRooms.push(room);
-          }
+          isRoomBusy(room.mid, startDate, toDate, oauthToken, function (busy) {
+            if (!busy) {
+              room.name = room.name.split('(')[0].trim();
+              availableRooms.push(room);
+            }
+          });
         } else if (!name) {
-          if (!isRoomBusy(room.mid, startDate, toDate, oauthToken)) {
-            room.name = room.name.split('(')[0].trim();
-            availableRooms.push(room);
-          }
+          isRoomBusy(room.mid, startDate, toDate, oauthToken, function (busy) {
+            if (!busy) {
+              room.name = room.name.split('(')[0].trim();
+              availableRooms.push(room);
+            }
+          });
         }
       });
     }
-    callback(availableRooms);
+
+    setTimeout(function () {
+      callback(availableRooms);
+    }, 1000);
   });
 };
 
@@ -472,17 +478,24 @@ var searchRoom = function (name, day, time, duration, oauthToken, callback) {
     if (rooms && rooms.length > 0) {
       rooms.forEach(function (room) {
         if (name && room.name.toLowerCase().indexOf(name.toLowerCase()) > -1) {
-          if (!isRoomBusy(room.mid, startDate, toDate, oauthToken)) {
-            availableRooms.push(room);
-          }
+          isRoomBusy(room.mid, startDate, toDate, oauthToken, function (busy) {
+            if (!busy) {
+              availableRooms.push(room);
+            }
+          });
         } else if (!name) {
-          if (!isRoomBusy(room.mid, startDate, toDate, oauthToken)) {
-            availableRooms.push(room);
-          }
+          isRoomBusy(room.mid, startDate, toDate, oauthToken, function (busy) {
+            if (!busy) {
+              availableRooms.push(room);
+            }
+          });
         }
       });
     }
-    callback(availableRooms);
+
+    setTimeout(function () {
+      callback(availableRooms);
+    }, 1000);
   });
 };
 
@@ -502,13 +515,9 @@ var isBusy = function (resource, auth, day, time, duration) {
   });
 };
 
-var isRoomBusy = function (roomResourceEmail, from, to, oauthToken) {
+var isRoomBusy = function (roomResourceEmail, from, to, oauthToken, callback) {
   listCalendarEvents(roomResourceEmail, from, to, oauthToken, function (events) {
-    if (!events || events.length <= 0) {
-      return false;
-    } else {
-      return true;
-    }
+    callback((events && events.length > 0 ? true : false));
   });
 };
 

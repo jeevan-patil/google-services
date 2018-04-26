@@ -12,8 +12,8 @@
   "currentIntent": {
     "name": "SearchFreeRooms",
     "slots": {
-      "OnDate": "2018-04-17",
-      "OnTime": "17:00"
+      "OnDate": "2018-04-29",
+      "OnTime": "06:00"
     },
     "slotDetails": {
       "OnDate": {

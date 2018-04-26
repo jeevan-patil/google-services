@@ -12,7 +12,8 @@
   "currentIntent": {
     "name": "ShowFreeSlots",
     "slots": {
-      "DateFrom": "2018-03-08"
+      "OnDate": "2018-04-29",
+      "OnTime": "06:00"
     },
     "slotDetails": {
       "DateFrom": {
