@@ -238,7 +238,7 @@ var listCalendarEvents = function (calendarId, from, to, auth, callback) {
     orderBy: 'startTime',
     timeMin: dateUtil.convertToRFC3339(from),
     timeMax: dateUtil.convertToRFC3339(to),
-    //timeZone: 'Asia/Kolkata'
+    timeZone: dateUtil.defaultTimezone()
   };
 
   //console.log(criteria);
@@ -304,13 +304,11 @@ var createEvent = function (eventDetails, auth, callback) {
   console.log('Meeting request: title - ' + title + ', day - ' + day + ', time - ' + time + ', for ' + duration
       + ' minutes in room - ' + room);
 
-  var start = dateUtil.addTimeToDate(day, time);
-  var startDate = start.format();
-
-  var end = new Date(start);
-  end.setMinutes(end.getMinutes() + duration);
-  var endDate = dateUtil.convertDate(end);
-  var timezone = 'Asia/Kolkata';
+  var timezone = dateUtil.defaultTimezone();
+  var startDate = dateUtil.prepareDate(day, time);
+  console.log('start ' + startDate);
+  var endDate = dateUtil.addMinutesAndReturnStringDate(startDate, duration);
+  console.log('end ' + endDate);
 
   var attendees = [];
   if (room) {
@@ -334,7 +332,6 @@ var createEvent = function (eventDetails, auth, callback) {
   setTimeout(function () {
     var calendarEvent = new Object();
     calendarEvent.summary = title;
-    //calendarEvent.location = location;
     calendarEvent.start = {
       'dateTime': startDate,
       'timeZone': timezone
@@ -436,8 +433,6 @@ var searchMeetingRooms = function (name, day, time, oauthToken, callback) {
   var toDate = startDate.clone();
   toDate = dateUtil.addMinutesToDate(toDate, defaultDuration);
   var availableRooms = [];
-
-  console.log('searching free rooms at ' + startDate.format());
 
   fetchAllTheRooms(oauthToken, function (rooms) {
     if (rooms && rooms.length > 0) {
